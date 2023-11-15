@@ -28,10 +28,10 @@ const App = () => {
             />
             <Text style={styles.title}>KATLAM</Text>
             <ScrollView style={styles.map}>
-                {rows.map(row => (
-                    <View style={styles.row}>
-                        {row.map(cell => (
-                            <View style={styles.cell}>
+                {rows.map((row: string[], index: number) => (
+                    <View key={index} style={styles.row}>
+                        {row.map((cell: string, cellIndex: number) => (
+                            <View key={cellIndex} style={styles.cell}>
                                 <Text style={styles.cellText}>
                                     {cell.toUpperCase()}
                                 </Text>
@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
     },
     map: {
         alignSelf: 'stretch',
+        marginVertical: 20,
         height: 100,
     },
     row: {
