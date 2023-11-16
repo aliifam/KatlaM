@@ -8,7 +8,7 @@ import {
     View,
 } from 'react-native';
 import React, {useState} from 'react';
-import {CLEAR, colors} from './src/constants/constants';
+import {CLEAR, ENTER, colors} from './src/constants/constants';
 import Keyboard from './src/components/keyboard';
 
 const copyArray = (arr: string[][]) => {
@@ -40,6 +40,15 @@ const App = () => {
             }
             return;
         }
+
+        if (key === ENTER) {
+            //check if row already fullfilled
+            if (curCol < rows[curRow].length) {
+                return;
+            }
+            setCurRow(curRow + 1);
+            setCurCol(0);
+        }
         //check if row already fullfilled
         if (curCol < rows[curRow].length) {
             updatedRows[curRow][curCol] = key;
@@ -50,6 +59,19 @@ const App = () => {
 
     const isCellActive = (row: number, col: number) => {
         return row === curRow && col === curCol;
+    };
+
+    const getCellBackgroundColor = (cell: string, row: number, col: number) => {
+        if (row >= curRow) {
+            return colors.black;
+        }
+        if (cell === huruf[col]) {
+            return colors.primary;
+        }
+        if (huruf.includes(cell)) {
+            return colors.secondary;
+        }
+        return colors.darkgrey;
     };
 
     return (
@@ -74,6 +96,13 @@ const App = () => {
                                         )
                                             ? colors.grey
                                             : colors.darkgrey,
+                                    },
+                                    {
+                                        backgroundColor: getCellBackgroundColor(
+                                            cell,
+                                            index,
+                                            cellIndex,
+                                        ),
                                     },
                                 ]}>
                                 <Text style={styles.cellText}>
