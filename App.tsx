@@ -61,7 +61,8 @@ const App = () => {
         return row === curRow && col === curCol;
     };
 
-    const getCellBackgroundColor = (cell: string, row: number, col: number) => {
+    const getCellBackgroundColor = (row: number, col: number) => {
+        const cell = rows[row][col];
         if (row >= curRow) {
             return colors.black;
         }
@@ -74,6 +75,19 @@ const App = () => {
         return colors.darkgrey;
     };
 
+    const gettAllHurufWithColor = (color: string): string[] => {
+        return rows.flatMap((row: string[], rowIndex: number) =>
+            row.filter(
+                (cell: string, colIndex: number) =>
+                    getCellBackgroundColor(rowIndex, colIndex) === color,
+            ),
+        );
+    };
+
+    const greenCaps: string[] = gettAllHurufWithColor(colors.primary);
+    const yellowCaps: string[] = gettAllHurufWithColor(colors.secondary);
+    const greyCaps: string[] = gettAllHurufWithColor(colors.darkgrey);
+
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar
@@ -82,26 +96,25 @@ const App = () => {
             />
             <Text style={styles.title}>KATLAM</Text>
             <ScrollView style={styles.map}>
-                {rows.map((row: string[], index: number) => (
-                    <View key={index} style={styles.row}>
-                        {row.map((cell: string, cellIndex: number) => (
+                {rows.map((row: string[], rowIndex: number) => (
+                    <View key={rowIndex} style={styles.row}>
+                        {row.map((cell: string, colIndex: number) => (
                             <View
-                                key={cellIndex}
+                                key={colIndex}
                                 style={[
                                     styles.cell,
                                     {
                                         borderColor: isCellActive(
-                                            index,
-                                            cellIndex,
+                                            rowIndex,
+                                            colIndex,
                                         )
                                             ? colors.grey
                                             : colors.darkgrey,
                                     },
                                     {
                                         backgroundColor: getCellBackgroundColor(
-                                            cell,
-                                            index,
-                                            cellIndex,
+                                            rowIndex,
+                                            colIndex,
                                         ),
                                     },
                                 ]}>
@@ -113,7 +126,12 @@ const App = () => {
                     </View>
                 ))}
             </ScrollView>
-            <Keyboard onKeyPressed={onKeyPressed} />
+            <Keyboard
+                onKeyPressed={onKeyPressed}
+                greyCaps={greyCaps}
+                yellowCaps={yellowCaps}
+                greenCaps={greenCaps}
+            />
         </SafeAreaView>
     );
 };
