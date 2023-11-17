@@ -9,8 +9,9 @@ import {
     Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {CLEAR, ENTER, colors} from './src/constants/constants';
+import {CLEAR, ENTER, colors, colorsToEmoji} from './src/constants/constants';
 import Keyboard from './src/components/keyboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const copyArray = (arr: string[][]) => {
     return [...arr.map(rows => [...rows])];
@@ -38,7 +39,9 @@ const App = () => {
 
     const checkGameState = () => {
         if (checkIfWon()) {
-            Alert.alert('You won!');
+            Alert.alert('Horee', 'Anda Menang!', [
+                {text: 'Bagikan', onPress: shareScore},
+            ]);
             setGameState('won');
         } else if (checkIfLost()) {
             Alert.alert('You lost!');
@@ -46,6 +49,23 @@ const App = () => {
         }
     };
 
+    const shareScore = () => {
+        const textShare = rows
+            .map((row: string[], rowIndex: number) =>
+                row
+                    .map(
+                        (cell: string, colIndex: number) =>
+                            colorsToEmoji[
+                                getCellBackgroundColor(rowIndex, colIndex)
+                            ],
+                    )
+                    .join(''),
+            )
+            .filter((row: string) => row)
+            .join('\n');
+        Clipboard.setString(textShare);
+        Alert.alert('Berhasil', 'Berhasil disalin ke clipboard');
+    };
     const checkIfWon = () => {
         const row = rows[curRow - 1];
         return row.every(
