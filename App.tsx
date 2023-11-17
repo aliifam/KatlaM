@@ -38,19 +38,19 @@ const App = () => {
     }, [curRow]);
 
     const checkGameState = () => {
-        if (checkIfWon()) {
+        if (checkIfWon() && gameState !== 'won') {
             Alert.alert('Horee', 'Anda Menang!', [
                 {text: 'Bagikan', onPress: shareScore},
             ]);
             setGameState('won');
-        } else if (checkIfLost()) {
+        } else if (checkIfLost() && gameState !== 'lost') {
             Alert.alert('You lost!');
             setGameState('lost');
         }
     };
 
     const shareScore = () => {
-        const textShare = rows
+        const emojiShare = rows
             .map((row: string[], rowIndex: number) =>
                 row
                     .map(
@@ -63,6 +63,7 @@ const App = () => {
             )
             .filter((row: string) => row)
             .join('\n');
+        const textShare = `KATLAM\n${emojiShare}`;
         Clipboard.setString(textShare);
         Alert.alert('Berhasil', 'Berhasil disalin ke clipboard');
     };
@@ -74,7 +75,7 @@ const App = () => {
     };
 
     const checkIfLost = () => {
-        return curRow === rows.length;
+        return !checkIfWon() && curRow === rows.length;
     };
 
     const onKeyPressed = (key: string) => {
