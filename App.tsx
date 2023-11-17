@@ -6,8 +6,9 @@ import {
     StyleSheet,
     ScrollView,
     View,
+    Alert,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {CLEAR, ENTER, colors} from './src/constants/constants';
 import Keyboard from './src/components/keyboard';
 
@@ -27,8 +28,39 @@ const App = () => {
     );
     const [curRow, setCurRow] = useState<number>(0);
     const [curCol, setCurCol] = useState<number>(0);
+    const [gameState, setGameState] = useState<string>('playing'); //playing, won, lost
+
+    useEffect(() => {
+        if (curRow > 0) {
+            checkGameState();
+        }
+    }, [curRow]);
+
+    const checkGameState = () => {
+        if (checkIfWon()) {
+            Alert.alert('You won!');
+            setGameState('won');
+        } else if (checkIfLost()) {
+            Alert.alert('You lost!');
+            setGameState('lost');
+        }
+    };
+
+    const checkIfWon = () => {
+        const row = rows[curRow - 1];
+        return row.every(
+            (cell: string, index: number) => cell === huruf[index],
+        );
+    };
+
+    const checkIfLost = () => {
+        return curRow === rows.length;
+    };
 
     const onKeyPressed = (key: string) => {
+        if (gameState !== 'playing') {
+            return;
+        }
         const updatedRows = copyArray(rows);
 
         if (key === CLEAR) {
@@ -152,7 +184,6 @@ const styles = StyleSheet.create({
     map: {
         alignSelf: 'stretch',
         marginVertical: 20,
-        height: 100,
     },
     row: {
         alignSelf: 'stretch',
