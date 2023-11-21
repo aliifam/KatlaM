@@ -5,12 +5,13 @@ import Keyboard from '../keyboard';
 import {CLEAR, ENTER, colors, colorsToEmoji} from '../../constants/constants';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {copyArray} from '../../utils';
+import {kamus} from '../../utils/kamus';
+
+const kata = kamus[Math.floor(Math.random() * kamus.length)];
+const huruf = kata.split('');
+const maxtry = 6;
 
 const Game = () => {
-    const kata = 'hallo';
-    const huruf = kata.split('');
-    const maxtry = 6;
-
     const [rows, setRows] = useState<string[][]>(
         new Array(maxtry).fill(new Array(huruf.length).fill('')),
     );
