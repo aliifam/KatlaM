@@ -1,4 +1,8 @@
-export const copyArray = <T>(arr: T[][]): T[][] => {
+// export const copyArray = <T>(arr: T[][]): T[][] => {
+//     return [...arr.map(rows => [...rows])];
+// };
+
+export const copyArray = (arr: string[][]) => {
     return [...arr.map(rows => [...rows])];
 };
 
