@@ -6,24 +6,64 @@ import {CLEAR, ENTER, colors, colorsToEmoji} from '../../constants/constants';
 import Clipboard from '@react-native-clipboard/clipboard';
 import {copyArray} from '../../utils';
 import {kamus} from '../../utils/kamus';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const kata = kamus[Math.floor(Math.random() * kamus.length)];
 const huruf = kata.split('');
 const maxtry = 6;
 
 const Game = () => {
+    // AsyncStorage.clear();
     const [rows, setRows] = useState<string[][]>(
         new Array(maxtry).fill(new Array(huruf.length).fill('')),
     );
     const [curRow, setCurRow] = useState<number>(0);
     const [curCol, setCurCol] = useState<number>(0);
     const [gameState, setGameState] = useState<string>('playing'); //playing, won, lost
+    const [loaded, setLoaded] = useState<boolean>(false);
 
     useEffect(() => {
         if (curRow > 0) {
             checkGameState();
         }
     }, [curRow]);
+
+    useEffect(() => {
+        if (loaded) {
+            persistState();
+        }
+    }, [rows, curRow, curCol, gameState]);
+
+    useEffect(() => {
+        loadState();
+    }, []);
+
+    const persistState = async () => {
+        const data = {
+            rows,
+            curRow,
+            curCol,
+            gameState,
+        };
+        await AsyncStorage.setItem('gameState', JSON.stringify(data));
+    };
+
+    const loadState = async () => {
+        const datastring = await AsyncStorage.getItem('gameState');
+        try {
+            if (datastring) {
+                const data = JSON.parse(datastring);
+                // console.log(data);
+                setRows(data.rows);
+                setCurRow(data.curRow);
+                setCurCol(data.curCol);
+                setGameState(data.gameState);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+        setLoaded(true);
+    };
 
     const checkGameState = () => {
         if (checkIfWon() && gameState !== 'won') {
@@ -51,7 +91,7 @@ const Game = () => {
             )
             .filter((row: string) => row)
             .join('\n');
-        const textShare = `KATLAM\n${emojiShare}`;
+        const textShare = `KATLAM\n\n${emojiShare}`;
         Clipboard.setString(textShare);
         Alert.alert('Berhasil', 'Berhasil disalin ke clipboard');
     };
@@ -85,6 +125,10 @@ const Game = () => {
         if (key === ENTER) {
             //check if row already fullfilled
             if (curCol < rows[curRow].length) {
+                return;
+            }
+            if (!kamus.includes(rows[curRow].join(''))) {
+                Alert.alert('Kata tidak ada dalam KBBI');
                 return;
             }
             setCurRow(curRow + 1);
